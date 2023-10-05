@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gerador de Senhas</title>
+    <!-- Adicionado Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        .donation {
+            font-size: 14px; /* Fonte menor */
+            margin-top: 20px; /* Espaço maior */
+        }
+        .password-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body class="container py-5">
+    <h1 class="text-center mb-5">Gerador de Senhas</h1>
+
+    <div class="form-group">
+        <label for="length">Comprimento da senha:</label>
+        <input type="range" id="length" name="length" min="8" max="24" value="12" class="form-control-range">
+        <small id="lengthValue" class="form-text text-muted"></small>
+    </div>
+
+    <div id="passwords"></div>
+
+    <button id="update" class="btn btn-primary mb-5">Atualizar Senhas</button>
+
+    <!-- Modificado -->
+    <div class="donation">
+        <h2>Doe para ajudar o site a continuar acessível!</h2> <!-- Corrigido -->
+        <p>Pix: c706f676-b37c-4a0b-8932-32c95d21d629<br> <!-- Quebra de linha modificada -->
+           Bitcoin: bc1qgdvknl0g4m57u3gq2w758tak302nmulexu7g89</p>
+    </div>
+
+    <!-- Adicionado Bootstrap JS e jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        function generatePassword(length) {
+            var charset = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ123456789@#$%&*",
+                retVal = "";
+            for (var i = 0, n = charset.length; i < length; ++i) {
+                retVal += charset.charAt(Math.floor(Math.random() * n));
+            }
+            return retVal;
+        }
+
+        function copyToClipboard(text, btn) { /* Modificado */
+            var dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+
+            // Adicionado
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
+            setTimeout(function() {
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-primary');
+            }, 500);
+        }
+
+        window.onload = function() {
+            var passwordsDiv = document.getElementById('passwords');
+            var lengthSlider = document.getElementById('length');
+            
+            lengthSlider.oninput = function() {
+                passwordsDiv.innerHTML = '';
+                for(var i = 0; i < 5; i++) { // Modificado para gerar apenas 5 senhas
+                    var password = generatePassword(this.value);
+                    var passwordContainer = document.createElement('div');
+                    passwordContainer.className = 'password-container';
+                    var passwordP = document.createElement('p');
+                    passwordP.textContent = password;
+                    var copyBtn = document.createElement('button');
+                    copyBtn.textContent = 'Copiar';
+                    copyBtn.className = 'btn btn-primary';
+                    copyBtn.onclick = function() {
+                        copyToClipboard(password, this); /* Modificado */
+                    }
+                    passwordContainer.appendChild(passwordP);
+                    passwordContainer.appendChild(copyBtn);
+                    passwordsDiv.appendChild(passwordContainer);
+                }
+                // Update the length display
+                document.getElementById('lengthValue').textContent = this.value + ' caracteres';
+            }
+
+           // Trigger the input event to generate the initial passwords
+           lengthSlider.dispatchEvent(new Event('input'));
+
+           // Add event listener to update button
+           document.getElementById('update').addEventListener('click', function() {
+               lengthSlider.dispatchEvent(new Event('input'));
+           });
+        }
+    </script>
+</body>
+</html>
