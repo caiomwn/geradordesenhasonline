@@ -2,6 +2,12 @@
 <html>
 <head>
     <title>Gerador de Senhas</title>
+    <meta charset="UTF-8">
+    <!-- Adicionado Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Adicionado FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- ... (seus estilos e scripts) ... -->
     <!-- Adicionado Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
@@ -11,35 +17,78 @@
             font-family: Arial, sans-serif;
         }
         .donation {
-            font-size: 14px; /* Fonte menor */
-            margin-top: 20px; /* Espaço maior */
+            font-size: 14px;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
         }
         .password-container {
             display: flex;
+            flex-direction: row;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 10px;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .password-container p {
+            margin-right: 5px;
+        }
+        .slider-container {
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body class="container py-5">
-    <h1 class="text-center mb-5">Gerador de Senhas</h1>
+    <div class="container">
+        <h1 class="text-center mb-5">Gerador de Senhas</h1>
 
-    <div class="form-group">
-        <label for="length">Comprimento da senha:</label>
-        <input type="range" id="length" name="length" min="8" max="24" value="12" class="form-control-range">
-        <small id="lengthValue" class="form-text text-muted"></small>
-    </div>
+        <div class="slider-container">
+            <div class="form-group">
+                <label for="length">Comprimento da senha:</label>
+                <input type="range" id="length" name="length" min="8" max="24" value="12" class="form-control-range">
+                <small id="lengthValue" class="form-text text-muted"></small>
+            </div>
+        </div>
 
-    <div id="passwords"></div>
+        <div id="passwords"></div>
 
-    <button id="update" class="btn btn-primary mb-5">Atualizar Senhas</button>
+        <div class="btn-container">
+            <button id="update" class="btn btn-primary"><i class="fas fa-sync"></i> Atualizar</button>
 
-    <!-- Modificado -->
-    <div class="donation">
-        <h2>Doe para ajudar o site a continuar acessível!</h2> <!-- Corrigido -->
-        <p>Pix: c706f676-b37c-4a0b-8932-32c95d21d629<br> <!-- Quebra de linha modificada -->
-           Bitcoin: bc1qgdvknl0g4m57u3gq2w758tak302nmulexu7g89</p>
+</button>
+        </div>
+
+        <div class="donation">
+            <h2>Doe para ajudar o site a continuar acessível!</h2>
+            <p>Pix: c706f676-b37c-4a0b-8932-32c95d21d629<br>
+            Bitcoin: bc1qgdvknl0g4m57u3gq2w758tak302nmulexu7g89</p>
+        </div>
     </div>
 
     <!-- Adicionado Bootstrap JS e jQuery -->
@@ -56,7 +105,7 @@
             return retVal;
         }
 
-        function copyToClipboard(text, btn) { /* Modificado */
+        function copyToClipboard(text, btn) {
             var dummy = document.createElement("textarea");
             document.body.appendChild(dummy);
             dummy.value = text;
@@ -64,7 +113,6 @@
             document.execCommand("copy");
             document.body.removeChild(dummy);
 
-            // Adicionado
             btn.classList.remove('btn-primary');
             btn.classList.add('btn-success');
             setTimeout(function() {
@@ -79,33 +127,30 @@
             
             lengthSlider.oninput = function() {
                 passwordsDiv.innerHTML = '';
-                for(var i = 0; i < 5; i++) { // Modificado para gerar apenas 5 senhas
+                for(var i = 0; i < 5; i++) {
                     var password = generatePassword(this.value);
                     var passwordContainer = document.createElement('div');
                     passwordContainer.className = 'password-container';
                     var passwordP = document.createElement('p');
                     passwordP.textContent = password;
                     var copyBtn = document.createElement('button');
-                    copyBtn.textContent = 'Copiar';
+                    copyBtn.innerHTML = '<i class="far fa-copy"></i>';
                     copyBtn.className = 'btn btn-primary';
                     copyBtn.onclick = function() {
-                        copyToClipboard(password, this); /* Modificado */
+                        copyToClipboard(password, this);
                     }
                     passwordContainer.appendChild(passwordP);
                     passwordContainer.appendChild(copyBtn);
                     passwordsDiv.appendChild(passwordContainer);
                 }
-                // Update the length display
                 document.getElementById('lengthValue').textContent = this.value + ' caracteres';
             }
 
-           // Trigger the input event to generate the initial passwords
-           lengthSlider.dispatchEvent(new Event('input'));
+            lengthSlider.dispatchEvent(new Event('input'));
 
-           // Add event listener to update button
-           document.getElementById('update').addEventListener('click', function() {
-               lengthSlider.dispatchEvent(new Event('input'));
-           });
+            document.getElementById('update').addEventListener('click', function() {
+                lengthSlider.dispatchEvent(new Event('input'));
+            });
         }
     </script>
 </body>
