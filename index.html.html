@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gerador de senhas online</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        #password {
+            font-size: 2em;
+            color: blue;
+            cursor: pointer;
+            position: absolute;
+            top: 40%;
+            transform: translateY(-50%);
+            width: 100%;
+            text-align: center;
+        }
+        #notification {
+            display: none;
+            position: absolute;
+            top: 50%;
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            width: auto;
+            text-align: center;
+        }
+        #top {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        #bottom {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        #ads {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="top">
+        <h1 data-translate="Gerador de senhas online">Gerador de senhas online</h1>
+        <p data-translate="Clique na senha para copiar">Clique na senha para copiar</p>
+    </div>
+    <div id="password"></div>
+    <div id="notification" data-translate="Senha copiada!">Senha copiada!</div>
+    <div id="bottom">
+        <input type="range" min="8" max="24" value="12" id="length">
+        <p id="length-display">12 caracteres</p>
+        <button class="btn btn-primary" id="reload" data-translate="Recarregar">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Recarregar
+        </button>
+    </div>
+
+    <!-- Espaço para anúncios do Google no canto inferior direito -->
+    <div id="ads">
+        <!-- Substitua este espaço pelo código de anúncio real do Google AdSense -->
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="seu-id-do-cliente"
+             data-ad-slot="seu-slot-de-anuncio"
+             data-ad-format="auto"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Função para detectar o idioma do usuário
+            function detectUserLanguage() {
+                var userLanguage = navigator.language || navigator.userLanguage;
+                return userLanguage;
+            }
+
+            // Função para traduzir o conteúdo
+            function translateContent(language) {
+                var contentElements = document.querySelectorAll('[data-translate]');
+                contentElements.forEach(function(element) {
+                    var originalText = element.getAttribute('data-translate');
+                    googleTranslate(originalText, language, function(translation) {
+                        element.textContent = translation;
+                    });
+                });
+            }
+
+            // Função para usar a API do Google Cloud Translation
+            function googleTranslate(text, targetLanguage, callback) {
+                // Substitua 'SEU_API_KEY' pela sua própria chave de API do Google Cloud Translation.
+                var apiKey = 'SEU_API_KEY';
+
+                $.ajax({
+                    url: 'https://translation.googleapis.com/language/translate/v2',
+                    method: 'POST',
+                    data: {
+                        q: text,
+                        target: targetLanguage,
+                        format: 'text',
+                        source: 'auto',
+                        key: apiKey
+                    },
+                    success: function(data) {
+                        if (data.data && data.data.translations && data.data.translations.length > 0) {
+                            callback(data.data.translations[0].translatedText);
+                        } else {
+                            callback(text);
+                        }
+                    }
+                });
+            }
+
+            // Detectar o idioma do usuário
+            var userLanguage = detectUserLanguage();
+
+            // Traduzir o conteúdo com base no idioma do usuário
+            translateContent(userLanguage);
+        });
+    </script>
+
+    <script>
+        var passwordElement = document.getElementById('password');
+        var lengthElement = document.getElementById('length');
+        var lengthDisplayElement = document.getElementById('length-display');
+        var reloadButton = document.getElementById('reload');
+        var notificationElement = document.getElementById('notification');
+
+        function generatePassword(length) {
+            var charset = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789@#$%&*";
+            var password = "";
+            for (var i = 0; i < length; i++) {
+                password += charset[Math.floor(Math.random() * charset.length)];
+            }
+            return password;
+        }
+
+        function updatePassword() {
+            var length = lengthElement.value;
+            var password = generatePassword(length);
+            passwordElement.textContent = password;
+            lengthDisplayElement.textContent = length + ' caracteres';
+        }
+
+        passwordElement.addEventListener('click', function() {
+            var range = document.createRange();
+            range.selectNode(passwordElement);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+
+            notificationElement.style.display = 'block';
+            setTimeout(function() {
+                notificationElement.style.display = 'none';
+            }, 2000);
+        });
+
+        lengthElement.addEventListener('input', updatePassword);
+
+        reloadButton.addEventListener('click', updatePassword);
+
+        updatePassword();
+    </script>
+</body>
+</html>
